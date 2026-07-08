@@ -1,0 +1,171 @@
+<!--rule-wazuh -->
+<group name="local,soar_project,web_network">
+    <rule id="100010" level="5">
+      <if_sid>554</if_sid>
+      <match>/var/wazuh_monitor/</match>
+      <description>[Flask] New file uploaded to monitored folder</description>
+      <group>file_uploaded,flask_upload,active-response</group>
+    </rule>
+
+    <rule id="100020" level="3">
+        <decoded_as>kernel</decoded_as>
+        <match>SYN flood|possible SYN flooding</match>
+        <description>Network: Kernel detected potential SYN flood mitigation activity</description>
+        <group>network,dos</group>
+    </rule>
+
+    <rule id="100021" level="10" frequency="6" timeframe="10">
+        <if_matched_sid>100020</if_matched_sid>
+        <description>CRITICAL: SYN Flood Attack Detected - Rate limiting triggered</description>
+        <group>network,dos,ddos</group>
+    </rule>
+
+    <rule id="100022" level="3">
+        <decoded_as>kernel</decoded_as>
+        <match>DDoS|flood|traffic spike|interface dropped</match>
+        <description>Network: Kernel reported suspicious volumetric traffic spike</description>
+        <group>network,ddos</group>
+    </rule>
+
+    <rule id="100023" level="12" frequency="10" timeframe="5">
+        <if_matched_sid>100022</if_matched_sid>
+        <description>CRITICAL: Volumetric DDoS Attack Detected - Mitigation required</description>
+        <group>network,ddos</group>
+    </rule>
+
+    <rule id="100031" level="10">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100001$</field>
+        <description>Suricata: Network SYN Flood Attack Alert</description>
+        <mitre>
+            <id>T1499.001</id>
+        </mitre>
+        <group>network,dos,ddos</group>
+    </rule>
+
+    <rule id="100032" level="12">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100002$</field>
+        <description>Suricata: Volumetric DDoS Attack Alert</description>
+        <mitre>
+            <id>T1499.001</id>
+        </mitre>
+        <group>network,ddos</group>
+    </rule>
+
+    <rule id="100033" level="10">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100003$</field>
+        <description>Suricata: SQL Injection Attempt (UNION SELECT Pattern)</description>
+        <mitre>
+            <id>T1190</id>
+        </mitre>
+        <group>web,sqli</group>
+    </rule>
+
+    <rule id="100034" level="11">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100004$</field>
+        <description>Suricata: Command Injection Attempt (System Enumeration Pattern)</description>
+        <mitre>
+            <id>T1059.003</id>
+        </mitre>
+        <group>web,cmd_injection</group>
+    </rule>
+
+    <rule id="100035" level="9">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100005$</field>
+        <description>Suricata: XSS Attempt (Script Tag or Alert)</description>
+        <mitre>
+            <id>T1189</id>
+        </mitre>
+        <group>web,xss</group>
+    </rule>
+
+    <rule id="100036" level="9">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100006$</field>
+        <description>Suricata: XSS Attempt (JavaScript Protocol or Event Handler)</description>
+        <mitre>
+            <id>T1189</id>
+        </mitre>
+        <group>web,xss</group>
+    </rule>
+
+    <rule id="100037" level="10">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100007$</field>
+        <description>Suricata: SSRF Attack Detected (Internal IP Address)</description>
+        <mitre>
+            <id>T1190</id>
+        </mitre>
+        <group>web,ssrf</group>
+    </rule>
+
+    <rule id="100038" level="13">
+        <if_sid>86601</if_sid>
+        <field name="alert.signature_id">^100008$</field>
+        <description>CRITICAL: Suricata Detected WEBSHELL ACCESS - Command Execution</description>
+        <mitre>
+            <id>T1059.003</id>
+        </mitre>
+        <group>web,webshell</group>
+    </rule>
+
+    <rule id="100040" level="8">
+        <if_groups>web</if_groups>
+        <field name="modsecurity.id">^942</field>
+        <description>ModSecurity: SQL Injection Pattern Detected (OWASP CRS)</description>
+        <group>web,sqli</group>
+    </rule>
+
+    <rule id="100041" level="12" frequency="3" timeframe="10">
+        <if_matched_sid>100040</if_matched_sid>
+        <same_source_ip/>
+        <description>CRITICAL: High-Frequency SQL Injection Attack From Same IP</description>
+        <group>web,sqli</group>
+    </rule>
+
+    <rule id="100042" level="8">
+        <if_groups>web</if_groups>
+        <field name="modsecurity.id">^941</field>
+        <description>ModSecurity: Cross-Site Scripting (XSS) Pattern Detected</description>
+        <group>web,xss</group>
+    </rule>
+
+    <rule id="100043" level="11" frequency="3" timeframe="10">
+        <if_matched_sid>100042</if_matched_sid>
+        <same_source_ip/>
+        <description>CRITICAL: High-Frequency XSS Attack From Same IP</description>
+        <group>web,xss</group>
+    </rule>
+
+    <rule id="100044" level="12">
+        <if_groups>web</if_groups>
+        <field name="modsecurity.id">^932</field>
+        <description>CRITICAL: ModSecurity Detected Remote Code/Command Execution Attempt</description>
+        <group>web,cmd_injection</group>
+    </rule>
+
+    <rule id="100045" level="13">
+        <if_groups>web</if_groups>
+        <field name="modsecurity.id">^933</field>
+        <description>CRITICAL: ModSecurity Detected Web Shell / Malicious PHP Upload Attempt</description>
+        <group>web,webshell</group>
+    </rule>
+
+    <rule id="100070" level="15" frequency="2" timeframe="60">
+        <if_matched_group>sqli|xss|cmd_injection|ssrf|webshell</if_matched_group>
+        <same_source_ip/>
+        <description>APT/CONFIRMED ATTACK: ModSecurity and Suricata both confirmed attack from same IP</description>
+        <group>web,correlation,critical</group>
+    </rule>
+
+    <rule id="100071" level="15" frequency="2" timeframe="120">
+        <if_matched_group>dos|ddos,web</if_matched_group>
+        <same_source_ip/>
+        <description>APT ALERT: Network DDoS combined with Web Application Attack from same IP (Distraction Pattern)</description>
+        <group>correlation,critical</group>
+    </rule>
+</group>

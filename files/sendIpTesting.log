@@ -1,0 +1,1 @@
+echo '{"version":1,"origin":{"name":"node01","module":"wazuh-analysisd"},"command":"add","parameters":{"extra_args":[],"alert":{"rule":{"id":"100033","description":"Test SQL Injection Alert"},"data":{"srcip":"8.8.8.8"}},"program":"/var/ossec/active-response/bin/send-ip-to-shuffle.sh"}}' | sh send-ip-to-shuffle.sh

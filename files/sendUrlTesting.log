@@ -1,0 +1,1 @@
+echo '{"parameters":{"alert":{"rule":{"id":"100033","description":"Test SQL Injection Alert"},"data":{"srcip":"1.2.3.4","url":"https://digikala.com"}}}}' | sh send-url-to-shuffle.sh

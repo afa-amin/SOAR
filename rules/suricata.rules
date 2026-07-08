@@ -1,0 +1,24 @@
+#suricata-ids-mode
+#syn-flood
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"(custom-rule1) SYN Flood Attack Detected"; flow:to_server,stateless; flags:S; threshold:type both, track by_dst, count 500, seconds 5; classtype:attempted-dos; metadata:mitre_attack_tactic TA0040, mitre_attack_technique T1499.001; sid:100001; rev:1;)
+
+#ddos-volumetric
+alert ip $EXTERNAL_NET any -> $HOME_NET any (msg:"(custom-rule2) Volumetric DDoS Attack Detected"; threshold:type both, track by_dst, count 50000, seconds 1; classtype:attempted-dos; metadata:mitre_attack_tactic TA0040, mitre_attack_technique T1499.001; sid:100002; rev:1;)
+
+#sql-injection
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule3) SQL Injection - UNION SELECT Pattern"; flow:to_server,established; http.uri; content:"UNION"; nocase; content:"SELECT"; distance:0; nocase; threshold:type both, track by_src, count 5, seconds 120; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1190, cwe CWE-89; priority:1; sid:100003; rev:3;)
+
+#command-injection
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule4) Command Injection - System Enumeration Pattern"; flow:to_server,established; http.uri; pcre:"/(whoami|id|ls|uname|hostname|pwd|cat\s+\/etc\/passwd)/i"; threshold:type both, track by_src, count 3, seconds 60; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1059.003; priority:1; sid:100004; rev:3;)
+
+#xss-injection
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule5) XSS Attack - Script Tag or Alert"; flow:to_server,established; http.uri; pcre:"/<script|alert\(/i"; threshold:type both, track by_src, count 5, seconds 120; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1189, cwe CWE-79; priority:2; sid:100005; rev:3;)
+
+#xss-injection
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule6) XSS Attack - JavaScript Protocol or Event Handler"; flow:to_server,established; http.uri; pcre:"/javascript:|on(load|error|click|mouseover)\s*=/i"; threshold:type both, track by_src, count 5, seconds 120; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1189, cwe CWE-79; priority:2; sid:100006; rev:3;)
+
+#ssrf-injection
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule7) SSRF Attack - Internal IP Address"; flow:to_server,established; http.uri; pcre:"/(127\.0\.0\.1|localhost|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})/i"; threshold:type both, track by_src, count 3, seconds 60; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1190, cwe CWE-918; priority:2; sid:100007; rev:3;)
+
+#webshell-access
+alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"(custom-rule8) WEBSHELL ACCESS - Command Execution"; flow:to_server,established; http.uri; pcre:"/(exec=|shell=|cmd=|wget\s|curl\s|nc\s|bash\s|sh\s|python\s-c|perl\s-e)/i"; threshold:type both, track by_src, count 3, seconds 60; classtype:web-application-attack; metadata:mitre_attack_tactic TA0002, mitre_attack_technique T1059.003; priority:1; sid:100008; rev:2;)
