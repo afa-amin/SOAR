@@ -7,8 +7,6 @@ json_escape() {
     printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g'
 }
 
-# --- استخراج URL ---
-# فیلدهای رایجی که Wazuh/Suricata/ModSecurity معمولا URL رو توشون می‌ذارن
 URL=$(echo "$input" | grep -oE '"url"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | cut -d'"' -f4)
 
 if [ -z "$URL" ]; then
@@ -19,12 +17,10 @@ if [ -z "$URL" ]; then
     URL=$(echo "$input" | grep -oE '"request"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | cut -d'"' -f4)
 fi
 
-# fallback: هر چیزی که شکل یک URL کامل (http/https) داره از کل ورودی
 if [ -z "$URL" ]; then
     URL=$(echo "$input" | grep -oE 'https?://[^"[:space:]\\]+' | head -n1)
 fi
 
-# --- اطلاعات کمکی برای context ---
 SRC_IP=$(echo "$input" | grep -oE '"srcip"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | cut -d'"' -f4)
 [ -z "$SRC_IP" ] && SRC_IP=$(echo "$input" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n1)
 
@@ -38,12 +34,10 @@ if [ -z "$URL" ]; then
     exit 1
 fi
 
-# --- ارسال به وبهوک Shuffle ---
 URL_ESC=$(json_escape "$URL")
 IP_ESC=$(json_escape "$SRC_IP")
 DESC_ESC=$(json_escape "$RULE_DESC")
 
-# !! جای این آدرس رو با آدرس وبهوک واقعی Shuffle (مخصوص ورک‌فلوی اسکن URL) عوض کن !!
 SHUFFLE_WEBHOOK_URL="https://shuffler.io/api/v1/hooks/webhook_dcaab290-6802-4a56-917d-cdd7fabf6921"
 
 curl -s --max-time 15 -X POST "$SHUFFLE_WEBHOOK_URL" \

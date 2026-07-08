@@ -1,7 +1,6 @@
 #!/bin/sh
 read -r input
 
-# تابع escape کردن مقادیر برای اینکه امن داخل JSON قرار بگیرن
 json_escape() {
     printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g'
 }
@@ -13,7 +12,6 @@ send_bale() {
          -d "{\"chat_id\":\"896298845\",\"text\":\"$TEXT_ESCAPED\"}" > /dev/null
 }
 
-# استخراج اطلاعات
 FILE=$(echo "$input" | grep -o '"path":[^,}]*' | cut -d'"' -f4 | sed 's/.*\///')
 FULL_PATH=$(echo "$input" | grep -o '"path":[^,}]*' | cut -d'"' -f4)
 [ -z "$FILE" ] && FILE="Unknown file"
@@ -28,10 +26,8 @@ fi
 
 VT_API_KEY="a112ca042d3e6a78124faffdb6b81ae04be6bf6011958d8df6de2109323d9ccd"
 
-# پیام اول (فوری)
 send_bale "🆕 New File Added !\nFile: $FILE\nTime: $(date '+%Y-%m-%d %H:%M:%S')"
 
-# آپلود به VirusTotal (با timeout تا هیچ‌وقت گیر نکنه)
 VT_RESPONSE=$(curl -s --connect-timeout 10 --max-time 60 -w "\n%{http_code}" --request POST \
      --url https://www.virustotal.com/api/v3/files \
      --header "x-apikey: $VT_API_KEY" \
@@ -52,7 +48,6 @@ if [ "$HTTP_CODE" != "200" ]; then
     exit 1
 fi
 
-# --- استخراج Analysis ID ---
 ANALYSIS_ID=$(echo "$VT_BODY" | grep -oE '"id"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | cut -d'"' -f4)
 
 if [ -z "$ANALYSIS_ID" ]; then
@@ -60,7 +55,6 @@ if [ -z "$ANALYSIS_ID" ]; then
     exit 1
 fi
 
-# پیام میانی: شروع اسکن (اطلاع‌رسانی فوری، هنوز منتظر نتیجه نمی‌مونیم)
 SCAN_TEXT="🔍 VirusTotal Scan Started!\nFile: $FILE\n\n📋 Full Analysis ID:\n$ANALYSIS_ID\n\n🔗 Link:\nhttps://www.virustotal.com/gui/file/$ANALYSIS_ID"
 send_bale "$SCAN_TEXT"
 
@@ -69,7 +63,6 @@ echo "[$(date)] Scan started - $FILE | ID: $ANALYSIS_ID - waiting for completion
 
 echo "[$(date)] Scan started - $FILE | ID: $ANALYSIS_ID - waiting for completion..." >> /var/ossec/logs/active-responses.log
 
-# --- منتظر ماندن تا اسکن واقعاً completed بشه (قبل از ارسال به webhook) ---
 MAX_RETRIES=30
 RETRY_COUNT=0
 SCAN_COMPLETE=0
@@ -101,7 +94,6 @@ fi
 
 echo "[$(date)] Scan completed - $FILE | ID: $ANALYSIS_ID" >> /var/ossec/logs/active-responses.log
 
-# --- استخراج آمار نهایی از نتیجه‌ی completed ---
 HARMLESS=$(echo "$STATUS_RESULT" | grep -o '"harmless":[0-9]*' | head -1 | cut -d':' -f2)
 MALICIOUS=$(echo "$STATUS_RESULT" | grep -o '"malicious":[0-9]*' | head -1 | cut -d':' -f2)
 SUSPICIOUS=$(echo "$STATUS_RESULT" | grep -o '"suspicious":[0-9]*' | head -1 | cut -d':' -f2)
@@ -112,7 +104,6 @@ UNDETECTED=$(echo "$STATUS_RESULT" | grep -o '"undetected":[0-9]*' | head -1 | c
 [ -z "$SUSPICIOUS" ] && SUSPICIOUS=0
 [ -z "$UNDETECTED" ] && UNDETECTED=0
 
-# --- ارسال داده‌ی نهایی (کامل و آماده) به وبهوک Shuffle ---
 FILE_ESC=$(json_escape "$FILE")
 FULL_PATH_ESC=$(json_escape "$FULL_PATH")
 SCAN_TEXT_ESC=$(json_escape "$SCAN_TEXT")
