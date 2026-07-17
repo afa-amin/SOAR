@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import json
@@ -63,7 +65,7 @@ def extract_ip(data):
         return params["srcip"]
 
     alert = params.get("alert", {})
-    return alert.get("data", {}).get("srcip")
+    return alert.get("data", {}).get("src_ip")
 
 
 def main():
