@@ -87,7 +87,7 @@ def extract_ip(data):
 
     # ADD case: normal alert
     alert = params.get("alert", {})
-    return alert.get("data", {}).get("srcip")
+    return alert.get("data", {}).get("src_ip")
 
 
 def main():
