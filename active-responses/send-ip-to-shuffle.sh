@@ -30,9 +30,9 @@ fi
 IP_ESC=$(json_escape "$SRC_IP")
 DESC_ESC=$(json_escape "$RULE_DESC")
 
-SHUFFLE_WEBHOOK_URL="https://shuffler.io/api/v1/hooks/webhook_REPLACE_ME"
+SHUFFLE_WEBHOOK_URL="https://shuffler.io/api/v1/hooks/SECRET"
 
-curl -s --max-time 15 -X POST "https://shuffler.io/api/v1/hooks/webhook_93822b27-2cd3-403a-aef9-d2c272dfe2f7" \
+curl -s --max-time 15 -X POST "https://shuffler.io/api/v1/hooks/SECRET" \
      -H "Content-Type: application/json" \
      -d "{\"ip\":\"$IP_ESC\",\"rule_id\":\"$RULE_ID\",\"description\":\"$DESC_ESC\",\"time\":\"$(date '+%Y-%m-%d %H:%M:%S')\"}" > /dev/null
 
