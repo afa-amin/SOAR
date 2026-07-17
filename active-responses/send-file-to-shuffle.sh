@@ -7,7 +7,7 @@ json_escape() {
 
 send_bale() {
     TEXT_ESCAPED=$(json_escape "$1")
-    curl -s --max-time 15 -X POST "https://tapi.bale.ai/79017824:PuxKTVU9WvpGz6sQDk42siuIt65DdVZOzd8/sendMessage" \
+    curl -s --max-time 15 -X POST "https://tapi.bale.ai/SECRET/sendMessage" \
          -H "Content-Type: application/json" \
          -d "{\"chat_id\":\"896298845\",\"text\":\"$TEXT_ESCAPED\"}" > /dev/null
 }
@@ -24,7 +24,7 @@ if [ ! -f "$FULL_PATH" ]; then
     exit 1
 fi
 
-VT_API_KEY="a112ca042d3e6a78124faffdb6b81ae04be6bf6011958d8df6de2109323d9ccd"
+VT_API_KEY="SECRET"
 
 send_bale "🆕 New File Added !\nFile: $FILE\nTime: $(date '+%Y-%m-%d %H:%M:%S')"
 
@@ -108,7 +108,7 @@ FILE_ESC=$(json_escape "$FILE")
 FULL_PATH_ESC=$(json_escape "$FULL_PATH")
 SCAN_TEXT_ESC=$(json_escape "$SCAN_TEXT")
 
-curl -s --max-time 15 -X POST "https://shuffler.io/api/v1/hooks/webhook_fab2c4de-00ad-448d-b1bd-41d514b47eaf" \
+curl -s --max-time 15 -X POST "https://shuffler.io/api/v1/hooks/SECRET" \
      -H "Content-Type: application/json" \
      -d "{\"file\":\"$FILE_ESC\",\"full_path\":\"$FULL_PATH_ESC\",\"analysis_id\":\"$ANALYSIS_ID\",\"link\":\"https://www.virustotal.com/gui/file/$ANALYSIS_ID\",\"text\":\"$SCAN_TEXT_ESC\",\"harmless\":$HARMLESS,\"malicious\":$MALICIOUS,\"suspicious\":$SUSPICIOUS,\>
 
