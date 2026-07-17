@@ -38,7 +38,7 @@ URL_ESC=$(json_escape "$URL")
 IP_ESC=$(json_escape "$SRC_IP")
 DESC_ESC=$(json_escape "$RULE_DESC")
 
-SHUFFLE_WEBHOOK_URL="https://shuffler.io/api/v1/hooks/webhook_dcaab290-6802-4a56-917d-cdd7fabf6921"
+SHUFFLE_WEBHOOK_URL="https://shuffler.io/api/v1/hooks/SECRET"
 
 curl -s --max-time 15 -X POST "$SHUFFLE_WEBHOOK_URL" \
      -H "Content-Type: application/json" \
