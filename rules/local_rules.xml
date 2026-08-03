@@ -114,7 +114,7 @@
     </rule>
 
     <rule id="100040" level="8">
-        <if_groups>web</if_groups>
+        <if_group>web</if_group>
         <field name="modsecurity.id">^942</field>
         <description>ModSecurity: SQL Injection Pattern Detected (OWASP CRS)</description>
         <group>web,sqli</group>
@@ -128,7 +128,7 @@
     </rule>
 
     <rule id="100042" level="8">
-        <if_groups>web</if_groups>
+        <if_group>web</if_group>
         <field name="modsecurity.id">^941</field>
         <description>ModSecurity: Cross-Site Scripting (XSS) Pattern Detected</description>
         <group>web,xss</group>
@@ -142,14 +142,14 @@
     </rule>
 
     <rule id="100044" level="12">
-        <if_groups>web</if_groups>
+        <if_group>web</if_group>
         <field name="modsecurity.id">^932</field>
         <description>CRITICAL: ModSecurity Detected Remote Code/Command Execution Attempt</description>
         <group>web,cmd_injection</group>
     </rule>
 
     <rule id="100045" level="13">
-        <if_groups>web</if_groups>
+        <if_group>web</if_group>
         <field name="modsecurity.id">^933</field>
         <description>CRITICAL: ModSecurity Detected Web Shell / Malicious PHP Upload Attempt</description>
         <group>web,webshell</group>
